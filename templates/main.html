@@ -1,0 +1,206 @@
+<document>
+    <head>
+        {% load static %}
+        <script src="{% static "js/jquery-3.2.1.min.js" %}" charset="UTF-8"></script>
+    </head>
+
+    <body>
+
+        <form action="/new">
+            <input type="submit" value="新建" />
+        </form>
+
+        <form action="/export">
+            <input type="submit" value="导出" />
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <td>用户名</td>
+                    <td>数量（斤）</td>
+
+                    <td>
+                        <select onchange="pay_change_function(this.value)">
+                            <option value="all">支付状态</option>
+                            <option value="yes">已付</option>
+                            <option value="no">未付</option>
+                        </select>
+                    </td>
+                    
+                    <td>
+                        <select onchange="take_change_function(this.value)">
+                            <option value="all">取货状态</option>
+                            <option value="yes">已取</option>
+                            <option value="no">未取</option>
+                        </select>
+                    </td>
+
+                    <td>备注</td>
+                    <td>操作</td>
+
+                </tr>
+            </thead>
+
+            <tbody id="table_body">
+                {% for u in user %}
+                <tr id="{{u.id}}">
+                    <td>{{u.name}}</td>
+                    <td>{{u.count}}</td>
+                    <td>{{u.pay_state}}</td>
+                    <td>{{u.take}}</td>
+                    <td>{{u.desc}}</td>
+                    <!-- <td><button type="button" onclick="modify_button_click(this)">Modify</button></td> -->
+                    <td><button type="button" onclick="delete_button_click(this)">Delete</button></td>
+                </tr>
+                {% endfor %}        
+            </tbody>
+        </table>
+
+    </body>
+
+    <script>
+
+     {% autoescape off %}
+     var guser = {{ guser }};
+     {% endautoescape %}
+
+     // using jQuery
+     function getCookie(name) {
+         var cookieValue = null;
+         if (document.cookie && document.cookie !== '') {
+             var cookies = document.cookie.split(';');
+             for (var i = 0; i < cookies.length; i++) {
+                 var cookie = jQuery.trim(cookies[i]);
+                 // Does this cookie string begin with the name we want?
+                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                     break;
+                 }
+             }
+         }
+         return cookieValue;
+     }
+     function modify_button_click(obj) {
+         parrent = obj.parentElement.parentElement;
+         id = parrent.getAttribute('id');
+         $.post("/change",
+                {
+                    'id': id,
+                    'csrfmiddlewaretoken': getCookie('csrftoken'),
+                    'action': 'MODIFY',
+                },
+                function(result){
+                    ;
+                })
+     }
+
+     function delete_button_click(obj) {
+         parrent = obj.parentElement.parentElement;
+         id = parrent.getAttribute('id');
+         $.post("/change",
+                {
+                    'id': id,
+                    'csrfmiddlewaretoken': getCookie('csrftoken'),
+                    'action': 'DELETE',
+                },
+                function(result){
+                    $(location).attr('href', '/');
+                })
+     }
+
+     function recreate_table_body(luser){
+         b = document.getElementById('table_body');
+         b.innerHTML = "";
+         var sum = "";
+
+         for (i=0; i<luser.length ;i++)
+         {
+             obj = luser[i];
+             temptr = document.createElement("tr");
+             temptr.setAttribute('id', obj.id);
+
+             username = document.createElement("td");
+             username.innerHTML = obj.name;
+
+             count = document.createElement("td");
+             count.innerHTML = obj.count;
+
+             pay_state = document.createElement("td");
+             pay_state.innerHTML = obj.pay_state;
+
+             take = document.createElement("td");
+             take.innerHTML = obj.take;
+
+             desc = document.createElement("td");
+             desc.innerHTML = obj.desc;
+
+             //modify_td = document.createElement("td");
+             //modify = document.createElement("button");
+             //modify.setAttribute('type', 'button');
+             //modify.setAttribute('onclick', 'modify_button_click(this)');
+             //modify.innerHTML = 'Modify';
+             //modify_td.innerHTML = modify.outerHTML;
+
+             Delete_td = document.createElement("td");
+             Delete = document.createElement("button");
+             Delete.setAttribute('type', 'button');
+             Delete.setAttribute('onclick', 'delete_button_click(this)');
+             Delete.innerHTML = 'Delete';
+             Delete_td.innerHTML = Delete.outerHTML;
+
+             temptr.appendChild(username);
+             temptr.appendChild(count);
+             temptr.appendChild(pay_state);
+             temptr.appendChild(take);
+             temptr.appendChild(desc);
+             //temptr.appendChild(modify_td);
+             temptr.appendChild(Delete_td);
+
+             sum = sum + temptr.outerHTML;
+         }
+         b.innerHTML = sum;
+     }
+
+     function take_change_function(val) {
+         if (val == 'all'){
+             recreate_table_body(guser);
+             return;
+         }
+         
+         var u = [];
+         var j = 0;
+         for (i = 0;i < guser.length;i++){
+             if (guser[i].take == val)
+             {
+                 u[j] = guser[i];
+                 j = j + 1;
+             }
+         }
+         recreate_table_body(u);
+     }
+
+     function pay_change_function(val) {
+         if (val == 'all'){
+             recreate_table_body(guser);
+             return;
+         }
+         
+         var u = [];
+         var j = 0;
+         for (i = 0;i < guser.length;i++){
+             if (guser[i].pay_state == val)
+             {
+                 u[j] = guser[i];
+                 j = j + 1;
+             }
+         }
+         recreate_table_body(u);
+     }
+
+     function debug(){
+         b = document.getElementById('table_body');
+         alert(b.innerHTML);
+     }
+    </script>
+</document>
