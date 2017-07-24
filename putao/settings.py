@@ -25,7 +25,7 @@ SECRET_KEY = '6k8u)%c&1c1@=hzfvx@sx&r_9e$gq0o63s)x*!t34n5s98^ty#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -85,7 +85,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'zh-cn'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 

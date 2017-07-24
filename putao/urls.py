@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^new$', view.new),
     url(r'^change$', view.change),
     url(r'^export$', view.export),
+    url(r'^export_win$', view.export_win),
 ]

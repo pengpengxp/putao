@@ -84,7 +84,8 @@ def change(request):
         return HttpResponseRedirect('/',
                                     content_type='application/json')
 
-def export(request):
+
+def export_win(request):
     if request.method == 'GET':
         cursor = connection.cursor()
         cursor.execute('select id,name,count,pay_state,take,desc from tb;')
@@ -118,6 +119,45 @@ def export(request):
                     unicode(u['desc']),
             ]
             writer.writerow([item.encode('gb2312') for item in temp])
+        return response
+    else:
+        pass
+
+
+def export(request):
+    if request.method == 'GET':
+        cursor = connection.cursor()
+        cursor.execute('select id,name,count,pay_state,take,desc from tb;')
+        user = [
+            {'id': u[0],
+             'name': u[1],
+             'count': u[2],
+             'pay_state': u[3],
+             'take': u[4],
+             'desc': u[5]} for u in cursor.fetchall()]
+
+        response = HttpResponse(content_type='text/csv')
+        filename = time.strftime("%d/%m/%Y") + '-putao.csv'
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+
+        writer = csv.writer(response)
+        header = [u'用户名',
+                  u'数量（斤）',
+                  u'支付状态',
+                  u'取货状态',
+                  u'备注',
+                  u'操作',
+        ]
+        header = [item.encode('utf8') for item in header]
+        writer.writerow(header)
+        for u in user:
+            temp = [unicode(u['name']),
+                    unicode(u['count']),
+                    unicode(u['pay_state']),
+                    unicode(u['take']),
+                    unicode(u['desc']),
+            ]
+            writer.writerow([item.encode('utf8') for item in temp])
         return response
     else:
         pass
