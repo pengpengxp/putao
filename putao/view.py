@@ -72,10 +72,24 @@ def change(request):
     else:
         logging.debug('post data = %s' % request.POST)
         action = request.POST.get('action')
+
         id = request.POST.get('id')
         cursor = connection.cursor()
+
         if action == 'MODIFY':
             logging.debug('action = %s, id = %s' % (action, id))
+            name = unicode(request.POST.get('name')).encode('utf-8')
+            count = request.POST.get('count')
+            pay_state = request.POST.get('pay_state')
+            take = request.POST.get('take')
+            desc = unicode(request.POST.get('desc')).encode('utf-8')
+            sql_cmd = 'update tb set name="{}",count="{}",pay_state="{}",take="{}",desc="{}" where id="{}";'.format(name,
+                                                                                                                    count,
+                                                                                                                    pay_state,
+                                                                                                                    take,
+                                                                                                                    desc,
+                                                                                                                    id)
+            cursor.execute(sql_cmd)
         elif action == 'DELETE':
             logging.debug('action = %s, id = %s' % (action, id))
             sql_cmd = 'delete from tb where id == "{}";'.format(id)

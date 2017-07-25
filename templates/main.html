@@ -1,7 +1,13 @@
 <document>
-    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->   <head>
         {% load static %}
+        <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
         <script src="{% static "js/jquery-3.2.1.min.js" %}" charset="UTF-8"></script>
+        <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="UTF-8"></script>
     </head>
 
     <body>
@@ -18,8 +24,8 @@
             <input type="submit" value="windows导出" />
         </form>
 
-        <table>
-            <thead>
+        <table data-toggle="table">
+            <thead class="tr-class-1">
                 <tr>
                     <td>用户名</td>
                     <td>数量（斤）</td>
@@ -49,17 +55,60 @@
             <tbody id="table_body">
                 {% for u in user %}
                 <tr id="{{u.id}}">
-                    <td>{{u.name}}</td>
-                    <td>{{u.count}}</td>
-                    <td>{{u.pay_state}}</td>
-                    <td>{{u.take}}</td>
-                    <td>{{u.desc}}</td>
-                    <!-- <td><button type="button" onclick="modify_button_click(this)">Modify</button></td> -->
-                    <td><button type="button" onclick="delete_button_click(this)">Delete</button></td>
+                    <td id="{{u.id}}-name">{{u.name}}</td>
+                    <td id="{{u.id}}-count">{{u.count}}</td>
+                    <td id="{{u.id}}-pay_state">{{u.pay_state}}</td>
+                    <td id="{{u.id}}-take">{{u.take}}</td>
+                    <td id="{{u.id}}-desc">{{u.desc}}</td>
+
+                    <td><button class="btn btn-primary btn-lg" onclick="modify_button_click(this)">修改</button></td>
+                    <td><button class="btn btn-primary btn-lg" onclick="delete_button_click(this)">删除</button></td>
                 </tr>
                 {% endfor %}        
             </tbody>
         </table>
+
+        <!-- 模态框（Modal） -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">修改</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <table>
+                            <tbody>
+                                <td>
+                                    Username: <input type="text" id="template-name"><br>
+                                    Count: <input type="text" id="template-count"><br>
+
+                                    pay_state: <select id="template-pay_state">
+                                    <option value="yes">yes</option>
+                                    <option value="no" selected="selected">no</option>
+                                    </select><br>
+
+                                    take: <select id="template-take">
+                                        <option value="yes">yes</option>
+                                        <option value="no" selected="selected">no</option>
+                                    </select><br>
+                                    Description: <input type="text" id="template-desc"><br>
+
+                                </td>
+                            </tbody>
+                        </table>
+
+                        
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="post_modify_data()">提交</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
 
     </body>
 
@@ -85,18 +134,68 @@
          }
          return cookieValue;
      }
-     function modify_button_click(obj) {
-         parrent = obj.parentElement.parentElement;
-         id = parrent.getAttribute('id');
+
+     function post_modify_data(){
+         template = $('#modify_user_template');
+         name = template.find('#template-name').val();
+         count = template.find('#template-count').val();
+         desc = template.find('#template-desc').val();
+         pay_state = template.find('#template-pay_state').val();
+         take = template.find('#template-take').val();
          $.post("/change",
                 {
                     'id': id,
                     'csrfmiddlewaretoken': getCookie('csrftoken'),
                     'action': 'MODIFY',
+                    'name': name,
+                    'count': count,
+                    'pay_state': pay_state,
+                    'take': take,
+                    'desc': desc
                 },
                 function(result){
-                    ;
+                    $(location).attr('href', '/')
                 })
+     }
+
+     function modify_button_click(obj) {
+         parrent = obj.parentElement.parentElement;
+         id = parrent.getAttribute('id');
+         name = document.getElementById(id + '-name').innerHTML;
+         count = document.getElementById(id + '-count').innerHTML;
+         pay_state = document.getElementById(id + '-pay_state').innerHTML;
+         take = document.getElementById(id + '-take').innerHTML;
+         desc = document.getElementById(id + '-desc').innerHTML;
+
+         template = $('#myModal').clone(true);
+         template.attr('id', 'modify_user_template');
+
+         template.find('#template-name').val(name);
+         template.find('#template-count').val(count);
+         template.find('#template-desc').val(desc);
+
+         if (pay_state == 'yes')
+         {
+             template.find('#template-pay_state').html('<option value="yes" selected="selected">已付</option><option value="no">未付</option>');
+         }
+         else
+         {
+             template.find('#template-pay_state').html('<option value="yes">已付</option><option value="no" selected="selected">未付</option>');
+         }
+
+         if (take == 'yes')
+         {
+             template.find('#template-take').html('<option value="yes" selected="selected">已取</option><option value="no">未取</option>');
+         }
+         else
+         {
+             template.find('#template-take').html('<option value="yes">已取</option><option value="no" selected="selected">未取</option>');
+         }
+
+         template.modal('show');
+         pname = template.find('#template-name').val(name);
+         pcount = template.find('#template-count').val(count);
+         pdesc = template.find('#template-desc').val(desc);
      }
 
      function delete_button_click(obj) {
@@ -126,31 +225,38 @@
 
              username = document.createElement("td");
              username.innerHTML = obj.name;
+             username.setAttribute('id', obj.id + '-name');
 
              count = document.createElement("td");
              count.innerHTML = obj.count;
+             count.setAttribute('id', obj.id + '-count');
 
              pay_state = document.createElement("td");
              pay_state.innerHTML = obj.pay_state;
+             pay_state.setAttribute('id', obj.id + '-pay_state');
 
              take = document.createElement("td");
              take.innerHTML = obj.take;
+             take.setAttribute('id', obj.id + '-take');
 
              desc = document.createElement("td");
              desc.innerHTML = obj.desc;
+             desc.setAttribute('id', obj.id + '-desc');
 
-             //modify_td = document.createElement("td");
-             //modify = document.createElement("button");
-             //modify.setAttribute('type', 'button');
-             //modify.setAttribute('onclick', 'modify_button_click(this)');
-             //modify.innerHTML = 'Modify';
-             //modify_td.innerHTML = modify.outerHTML;
+             modify_td = document.createElement("td");
+             modify = document.createElement("button");
+             modify.setAttribute('type', 'button');
+             modify.setAttribute('onclick', 'modify_button_click(this)');
+             modify.setAttribute('class', 'btn btn-primary btn-lg');
+             modify.innerHTML = '修改';
+             modify_td.innerHTML = modify.outerHTML;
 
              Delete_td = document.createElement("td");
              Delete = document.createElement("button");
              Delete.setAttribute('type', 'button');
              Delete.setAttribute('onclick', 'delete_button_click(this)');
-             Delete.innerHTML = 'Delete';
+             Delete.setAttribute('class', 'btn btn-primary btn-lg');
+             Delete.innerHTML = '删除';
              Delete_td.innerHTML = Delete.outerHTML;
 
              temptr.appendChild(username);
@@ -158,7 +264,7 @@
              temptr.appendChild(pay_state);
              temptr.appendChild(take);
              temptr.appendChild(desc);
-             //temptr.appendChild(modify_td);
+             temptr.appendChild(modify_td);
              temptr.appendChild(Delete_td);
 
              sum = sum + temptr.outerHTML;
