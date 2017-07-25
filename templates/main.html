@@ -189,7 +189,7 @@
          $.post("/change",
                 {
                     'id': id,
-                    'csrfmiddlewaretoken': getCookie('csrftoken'),
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
                     'action': 'MODIFY',
                     'name': name,
                     'count': count,
@@ -216,7 +216,7 @@
          take = template.find('#template-take').val();
          $.post("/new",
                 {
-                    'csrfmiddlewaretoken': getCookie('csrftoken'),
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
                     'action': 'NEW',
                     'name': name,
                     'count': count,
@@ -276,7 +276,7 @@
          $.post("/change",
                 {
                     'id': id,
-                    'csrfmiddlewaretoken': getCookie('csrftoken'),
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
                     'action': 'DELETE',
                 },
                 function(result){
