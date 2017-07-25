@@ -12,20 +12,20 @@
 
     <body>
 
-        <form action="/new">
-            <input type="submit" value="新建" />
+        <form action="/new" style="display: inline">
+            <input type="submit" value="新建" class="btn btn-primary btn-lg" rows="5"/>
         </form>
 
-        <form action="/export">
-            <input type="submit" value="导出" />
+        <form action="/export" style="display: inline">
+            <input type="submit" value="导出" class="btn btn-primary btn-lg" rows="5"/>
         </form>
 
-        <form action="/export_win">
-            <input type="submit" value="windows导出" />
+        <form action="/export_win" style="display: inline">
+            <input type="submit" value="windows导出" class="btn btn-primary btn-lg" rows="5"/>
         </form>
 
-        <table data-toggle="table">
-            <thead class="tr-class-1">
+        <table class="table">
+            <thead>
                 <tr>
                     <td>用户名</td>
                     <td>数量（斤）</td>
@@ -47,7 +47,8 @@
                     </td>
 
                     <td>备注</td>
-                    <td>操作</td>
+                    <td>修改</td>
+                    <td>删除</td>
 
                 </tr>
             </thead>
