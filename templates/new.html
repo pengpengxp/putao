@@ -1,23 +1,36 @@
 <document>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <head>
+        {% load static %}
+        <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+        <script src="{% static "js/jquery-3.2.1.min.js" %}" charset="UTF-8"></script>
+        <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="UTF-8"></script>
+    </head>
 
     <body>
         <form action="/new" method="POST">
             {% csrf_token %}
-            Username: <input type="text" name="name"><br>
-            Count: <input type="text" name="count"><br>
+            <label>用户名： </label><input type="text" name="name" placeholder="Enter Username" style="margin-left: 10pt"><br>
 
-            pay_state: <select name="pay_state">
-            <option value="yes">yes</option>
-            <option value="no" selected="selected">no</option>
-            </select><br>
+            <label>数量： </label> <input type="text" name="count" placeholder="Enter Count"  style="margin-left: 10pt"><br>
 
-            take: <select name="take">
+            <label>支付状态： </label> <select name="pay_state">
                 <option value="yes">yes</option>
                 <option value="no" selected="selected">no</option>
             </select><br>
-            Description: <input type="text" name="desc"><br>
-            <input type="submit" value="Submit">
+
+            <label>取货状态： </label> <select name="take">
+                <option value="yes">yes</option>
+                <option value="no" selected="selected">no</option>
+            </select><br>
+            <label>备注： </label> <input type="text" name="desc"><br>
+            <input type="submit" value="提交">
         </form>
+
     </body>
 
 </document>

@@ -3,7 +3,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap -->
-    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->   <head>
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <head>
         {% load static %}
         <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
         <script src="{% static "js/jquery-3.2.1.min.js" %}" charset="UTF-8"></script>
@@ -12,9 +13,10 @@
 
     <body>
 
-        <form action="/new" style="display: inline">
-            <input type="submit" value="新建" class="btn btn-primary btn-lg" rows="5"/>
-        </form>
+        <!-- <form action="/new" style="display: inline"> -->
+        <!--     <input type="submit" value="新建" class="btn btn-primary btn-lg" rows="5"/> -->
+        <!-- </form> -->
+        <td><button class="btn btn-primary btn-lg" onclick="newuser(this)">新建</button></td>
 
         <form action="/export" style="display: inline">
             <input type="submit" value="导出" class="btn btn-primary btn-lg" rows="5"/>
@@ -111,6 +113,47 @@
             </div><!-- /.modal -->
         </div>
 
+        <div class="modal fade" id="newuserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">修改</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <table>
+                            <tbody>
+                                <td>
+                                    Username: <input type="text" id="template-name"><br>
+                                    Count: <input type="text" id="template-count"><br>
+
+                                    pay_state: <select id="template-pay_state">
+                                    <option value="yes">yes</option>
+                                    <option value="no" selected="selected">no</option>
+                                    </select><br>
+
+                                    take: <select id="template-take">
+                                        <option value="yes">yes</option>
+                                        <option value="no" selected="selected">no</option>
+                                    </select><br>
+                                    Description: <input type="text" id="template-desc"><br>
+
+                                </td>
+                            </tbody>
+                        </table>
+
+                        
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="post_newuser_data()">提交</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+
     </body>
 
     <script>
@@ -157,6 +200,34 @@
                 function(result){
                     $(location).attr('href', '/')
                 })
+     }
+
+     function newuser() {
+         template = $('#newuserModal').clone(true);
+         template.attr('id', 'new_user_template');
+         template.modal('show');
+     }
+     function post_newuser_data(){
+         template = $('#new_user_template');
+         name = template.find('#template-name').val();
+         count = template.find('#template-count').val();
+         desc = template.find('#template-desc').val();
+         pay_state = template.find('#template-pay_state').val();
+         take = template.find('#template-take').val();
+         $.post("/new",
+                {
+                    'csrfmiddlewaretoken': getCookie('csrftoken'),
+                    'action': 'NEW',
+                    'name': name,
+                    'count': count,
+                    'pay_state': pay_state,
+                    'take': take,
+                    'desc': desc
+                },
+                function(result){
+                    $(location).attr('href', '/')
+                })
+
      }
 
      function modify_button_click(obj) {
